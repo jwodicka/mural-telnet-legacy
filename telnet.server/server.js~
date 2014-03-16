@@ -4,15 +4,20 @@ var log = require('winston');
 var start = function(args, callback){
   var server = net.createServer(function(connection){
     log.info('Connection established');
+    // We have a connection object. It is a socket.
+    // We want to bundle it plus a few other things to make an Endpoint.
     connection.on('end', function(){
       log.info('Connection ended');
     }); 
     connection.on('data', function(data){
       log.info('Data Received');
       var words = data.toString().split(' ');
-      if(words[0].isEqualTo('connect')) {
+       
+      // This should probably be something better than an if.
+      if(words[0] == 'connect') {
         log.info('Authentication request');
-        connection.write(args['authServer'].authenticate(words[1], words[2]));
+        connection.user = (args['authServer']({username: words[1], password: words[2]}));
+        connection.write(connection.user.toString());
       }
     });
     connection.write('Welcome to Mural!');

@@ -1,6 +1,6 @@
 var server = require('../telnet.server/server.js');
 var winston = require('winston');
-// winston.remove(winston.transports.Console); // Don't log to the console during tests!
+winston.remove(winston.transports.Console); // Don't log to the console during tests!
 var sinon = require('sinon');
 var net = require('net');
 
@@ -46,7 +46,7 @@ describe ('Telnet Server', function(){
       client.on('data', function(data){
 	if(data.toString().match(/Welcome to Mural/)) {} 
 	else { 
-	  authStub.calledWith('testUser', 'testPassword').should.be.okay; 
+	  authStub.calledWith({username: 'testUser', password: 'testPassword'}).should.be.okay; 
 	  done(); 
 	}
       });

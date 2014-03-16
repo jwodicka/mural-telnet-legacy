@@ -46,7 +46,7 @@ describe ('Telnet Server', function(){
       client.on('data', function(data){
 	if(data.toString().match(/Welcome to Mural/)) {} 
 	else { 
-	  authStub.calledWith('testUser', 'testPassword').should.be.okay; 
+	  authStub.calledWith({username: 'testUser', password: 'testPassword'}).should.be.okay; 
 	  done(); 
 	}
       });
