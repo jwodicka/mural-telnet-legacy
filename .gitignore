@@ -7,6 +7,10 @@ lib-cov
 *.pid
 *.gz
 
+# Ignore vim temporary files.
+*~
+*.swp
+
 pids
 logs
 results
