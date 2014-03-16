@@ -1,0 +1,31 @@
+{
+  "private": "true",
+  "name": "mural",
+  "version": "0.0.0",
+  "description": "The Mural MU* server and aggregating proxy.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/istanbul cover node_modules/.bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jwodicka/mural.git"
+  },
+  "keywords": [
+    "telnet",
+    "mush",
+    "muck",
+    "mud",
+    "chat"
+  ],
+  "contributors": ["Jason Wodicka", "Kai Wodicka"],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jwodicka/mural/issues"
+  },
+  "devDependencies": {
+    "istanbul": "*",
+    "mocha": "*",
+    "should": "*"
+  }
+}
