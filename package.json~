@@ -29,8 +29,7 @@
   "devDependencies": {
     "istanbul": "*",
     "mocha": "*",
-    "should": "*",
-    "sinon": "*"
+    "should": "*"
   },
   "scripts": {
     "test": "istanbul cover _mocha"

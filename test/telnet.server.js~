@@ -1,6 +1,6 @@
 var server = require('../telnet.server/server.js');
 var winston = require('winston');
-// winston.remove(winston.transports.Console); // Don't log to the console during tests!
+winston.remove(winston.transports.Console); // Don't log to the console during tests!
 var sinon = require('sinon');
 var net = require('net');
 

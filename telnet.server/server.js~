@@ -10,7 +10,7 @@ var start = function(args, callback){
     connection.on('data', function(data){
       log.info('Data Received');
       var words = data.toString().split(' ');
-      if(words[0] == 'connect') {
+      if(words[0].isEqualTo('connect')) {
         log.info('Authentication request');
         connection.write(args['authServer'].authenticate(words[1], words[2]));
       }
