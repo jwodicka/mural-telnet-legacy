@@ -12,9 +12,18 @@ describe ('Telnet Server', function(){
     })
   }); 
 
-  it('should accept connections', function(done){
+  it('should accept a connection', function(done){
     var client = net.connect({port: port}, function(){
       done();
+    });
+  });
+
+  it('should accept multiple connections', function(done){
+    // This does NOT test whether multiple simultaneous connections are possible; it is possible for them to be created in series.
+    var client1 = net.connect({port: port}, function(){
+      var client2 = net.connect({port: port}, function(){
+        done();
+      });
     });
   });
 
@@ -25,4 +34,5 @@ describe ('Telnet Server', function(){
       done();
     });
   });
+  
 });
