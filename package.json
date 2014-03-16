@@ -3,7 +3,7 @@
   "name": "mural",
   "version": "0.0.0",
   "description": "The Mural MU* server and aggregating proxy.",
-  "main": "index.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/jwodicka/mural.git"

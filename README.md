@@ -9,4 +9,4 @@ You'll need `node.js` and `npm` installed globally to begin with.
 
 1. `npm install` to install needed dependencies
 2. `npm test` to run the unit tests
-3. _coming soon_ `npm start` to start the Mural instance running 
+3. `npm start` to start the Mural instance running 
