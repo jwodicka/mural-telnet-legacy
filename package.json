@@ -33,6 +33,8 @@
     "sinon": "*"
   },
   "scripts": {
-    "test": "istanbul cover _mocha"
+    "test": "istanbul cover _mocha",
+    "install": "scripts/install-redis.sh",
+    "install-redis": "scripts/install-redis.sh"
   }
 }
