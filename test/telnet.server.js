@@ -27,14 +27,14 @@ describe ('Telnet Server', function(){
     subStub.reset();
   });
 
-  it('should accept a connection', function(done){
+  it('accepts a connection', function(done){
     var client = net.connect({port: port}, function(){
       client.end();
       done();
     });
   });
 
-  it('should accept multiple connections', function(done){
+  it('accepts multiple connections', function(done){
     // This does NOT test whether multiple simultaneous connections are possible; they may be created in series.
     var client1 = net.connect({port: port}, function(){
       var client2 = net.connect({port: port}, function(){
@@ -45,7 +45,7 @@ describe ('Telnet Server', function(){
     });
   });
 
-  it('should banner on login', function(done){
+  it('banners on login', function(done){
     var client = net.connect({port: port});
     client.on('data', function(data){
       data.toString().should.match(/Welcome to Mural/);
@@ -54,7 +54,7 @@ describe ('Telnet Server', function(){
     });
   });
 
-  it('should pass credentials to the auth service', function(done){
+  it('passes credentials to the auth service', function(done){
     var client = net.connect({port:port}, function(connect){
       client.on('data', function(data){
 	if(data.toString().match(/testUser/)) { 
@@ -67,7 +67,7 @@ describe ('Telnet Server', function(){
     });
   });
   
-  it('should publish messages to a remote PoP', function(done){
+  it('publishes messages to a remote PoP', function(done){
     var client = net.connect({port:port}, function(connect){
       client.on('close', function(hadError){
         pubStub.calledWith('comm.TestWorld', 'Test Line').should.be.okay;	
@@ -81,7 +81,7 @@ describe ('Telnet Server', function(){
     });
   });
 
-  it('should not pass credentials twice', function(done){
+  it('does not pass credentials twice', function(done){
     var client = net.connect({port: port}, function(connect){
       client.on('data', function(data){
         if(data.toString().match(/testUser/)) {
@@ -131,7 +131,7 @@ describe ('Telnet Server', function(){
     });
   });
 
-  it('should subscribe to the user channel when authenticated', function(done){
+  it('subscribes to the user channel when authenticated', function(done){
     var client = net.connect({port: port}, function(connect){
       client.on('data', function(data){
         if(data.toString().match(/testUser/)) {
