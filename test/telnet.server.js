@@ -15,7 +15,7 @@ var sessionStub;
 describe ('Telnet Server', function(){
   before(function(done){
     // server.start should take an associative array of values (including a port number) and a callback,  and execute the callback once the server is running. 
-    authStub = sinon.stub().returns('testUser');
+    authStub = sinon.stub().callsArgWith(1, 'testUser');
     invalidAuthStub = sinon.stub().returns('false');
     subStub = sinon.stub().returns();
     pubStub = sinon.stub().returns(1);
