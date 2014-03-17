@@ -14,7 +14,7 @@ describe ('Telnet Server', function(){
     // server.start should take an associative array of values (including a port number) and a callback,  and execute the callback once the server is running. 
     authStub = sinon.stub().returns('testUser');
     subStub = sinon.stub().returns();
-    server.start({port: port, toAuthenticate: authStub, toSubscribe: subStub}, function() {
+    server.start({port: port, authenticate: authStub, subscribe: subStub}, function() {
       done();
     })
   }); 

@@ -20,8 +20,8 @@ var start = function(args, callback){
       } else {
         if(words[0] == 'connect') {
           log.info('Authentication request');
-          connection.user = (args['toAuthenticate']({username: words[1], password: words[2]}));
-	  args['toSubscribe']('user.' + connection.user.toString());
+          connection.user = (args['authenticate']({username: words[1], password: words[2]}));
+	  args['subscribe']('user.' + connection.user.toString());
           connection.write(connection.user.toString());
         }
       }
