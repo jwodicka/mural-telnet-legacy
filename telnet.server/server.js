@@ -42,7 +42,7 @@ var start = function(args, callback){
           connection.user = (args['authenticate']({username: words[1], password: words[2]}));
 	  args['subscribe']('user.' + connection.user.toString());
           connection.write(connection.user.toString() + '\n');
-        } else if(words[0] == 'help') {
+        } else if(words[0] == 'help' || words[0] == '%help') {
 	  connection.write('Have some helpfile. Only don\'t.\n');
 	} else {
 	  connection.write('Huh? \"connect <username> <password>\" or type \"help\"\n');
