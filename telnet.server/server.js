@@ -57,9 +57,10 @@ var start = function(args, callback){
         if(words[0] == 'connect') {
           log.info('Authentication request');
           args['authenticate']({username: words[1], password: words[2]}, function(user){
-	    connection.user = user;
-	    args['subscribe']('user.' + connection.user.toString());
-            connection.write(connection.user.toString() + '\n');
+            connection.user = user;
+	    args['subscribe']('user.' + connection.user, function(message){
+              connection.write(message.toString() + '\n');
+	    });
 	  });
         } else if(words[0] == 'help' || words[0] == '%help') {
 	  connection.write('Have some helpfile. Only don\'t.\n');

@@ -1,6 +1,6 @@
 var server = require('../telnet.server/server.js');
 var winston = require('winston');
-//winston.remove(winston.transports.Console); // Don't log to the console during tests!
+winston.remove(winston.transports.Console); // Don't log to the console during tests!
 var sinon = require('sinon');
 var net = require('net');
 
@@ -17,7 +17,7 @@ describe ('Telnet Server', function(){
     // server.start should take an associative array of values (including a port number) and a callback,  and execute the callback once the server is running. 
     authStub = sinon.stub().callsArgWith(1, 'testUser');
     invalidAuthStub = sinon.stub().returns('false');
-    subStub = sinon.stub().returns();
+    subStub = sinon.stub().callsArgWith(1, 'Subscribed');
     pubStub = sinon.stub().returns(1);
     sessionStub = sinon.stub().returns([{name:'Remote0'}, {name:'Remote1'}, {name:'Remote2'}]); 
     server.start({port: port, authenticate: authStub, subscribe: subStub, publish: pubStub, getRemotes: sessionStub}, function() {
@@ -75,11 +75,9 @@ describe ('Telnet Server', function(){
 
     it('passes credentials to the auth service', function(done){
       var client = net.connect({port:port}, function(connect){
-        client.on('data', function(data){
-  	  if(data.toString().match(/testUser/)) { 
-	    authStub.calledWith({username: 'testUser', password: 'testPassword'}).should.be.okay; 
-	    done(); 
-	  }
+        client.on('close', function(hadError){
+	  authStub.calledWith({username: 'testUser', password: 'testPassword'}).should.be.okay; 
+	  done(); 
         });
         client.write('connect testUser testPassword\n');
         client.end();
@@ -172,17 +170,16 @@ describe ('Telnet Server', function(){
 
     it('displays the authenticated-user helpfile when prompted');
     it('connects to a remote when prompted');
+    it('displays an error when text is sent in remote-mode with no remote active');
 
   });
 
   it('subscribes to the user channel when authenticated', function(done){
     var client = net.connect({port: port}, function(connect){
-      client.on('data', function(data){
-        if(data.toString().match(/testUser/)) {
-          authStub.calledOnce.should.be.okay;
-	  subStub.calledWith('user.testUser').should.be.okay;
-	  done();
-	}
+      client.on('close', function(hadError){
+        authStub.calledOnce.should.be.okay;
+	subStub.calledWith('user.testUser').should.be.okay;
+	done();
       });
       client.write('connect testUser testPassword\n');
       client.end();
