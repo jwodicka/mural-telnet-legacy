@@ -46,13 +46,12 @@ describe ('Telnet Server', function(){
     authStub.reset();
     var client = net.connect({port:port}, function(connect){
       client.on('data', function(data){
-	if(data.toString().match(/Welcome to Mural/)) {} 
-	else { 
+	if(data.toString().match(/testUser/)) { 
 	  authStub.calledWith({username: 'testUser', password: 'testPassword'}).should.be.okay; 
 	  done(); 
 	}
       });
-      client.write('connect testUser testPassword');
+      client.write('connect testUser testPassword\n');
     });
   });
 
@@ -60,13 +59,12 @@ describe ('Telnet Server', function(){
     authStub.reset();
     var client = net.connect({port: port}, function(connect){
       client.on('data', function(data){
-        if(data.toString().match(/Welcome to Mural/)) {}
-	else {
+        if(data.toString().match(/testUser/)) {
           authStub.calledOnce.should.be.okay;
 	  done();
 	}
       });
-      client.write('connect testUser testPassword');
+      client.write('connect testUser testPassword\n');
     });
   });
 });

@@ -24,6 +24,7 @@
     "url": "https://github.com/jwodicka/mural/issues"
   },
   "dependencies": {
+    "byline": "*",
     "winston": "*"
   },
   "devDependencies": {
