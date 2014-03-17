@@ -7,12 +7,14 @@ var net = require('net');
 
 var port = 8888;
 var authStub;
+var subStub;
 
 describe ('Telnet Server', function(){
   before(function(done){
     // server.start should take an associative array of values (including a port number) and a callback,  and execute the callback once the server is running. 
     authStub = sinon.stub().returns('testUser');
-    server.start({port: port, authServer: authStub}, function() {
+    subStub = sinon.stub().returns();
+    server.start({port: port, toAuthenticate: authStub, toSubscribe: subStub}, function() {
       done();
     })
   }); 
@@ -48,6 +50,20 @@ describe ('Telnet Server', function(){
 	else { 
 	  authStub.calledWith({username: 'testUser', password: 'testPassword'}).should.be.okay; 
 	  done(); 
+	}
+      });
+      client.write('connect testUser testPassword');
+    });
+  });
+
+  it('should not pass credentials twice', function(done){
+    authStub.reset();
+    var client = net.connect({port: port}, function(connect){
+      client.on('data', function(data){
+        if(data.toString().match(/Welcome to Mural/)) {}
+	else {
+          authStub.calledOnce.should.be.okay;
+	  done();
 	}
       });
       client.write('connect testUser testPassword');
