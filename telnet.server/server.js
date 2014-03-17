@@ -19,21 +19,38 @@ var start = function(args, callback){
     }); 
     stream.on('data', function(line){
       log.info('Data Received: '+ line.toString());
-      var lineAsString = line.toString();
+      var lineAsString = line.toString().trim();
       if(connection.user) {
         // There is an authenticated user.
 	if(lineAsString.charAt(0) === '%') {
           // This is our special char! We care about this line, yay!
 	  // TODO: This needs to care about security
-          var firstWord = lineAsString.slice(0, lineAsString.indexOf(' '));
+	  // commands with no space fail!
+	  var endOfSlice = lineAsString.indexOf(' ');
+	  if(endOfSlice === -1) { endOfSlice = lineAsString.length; }
+          var firstWord = lineAsString.slice(0, endOfSlice);
 	  if(firstWord === '%world') {
-            activeRemote = lineAsString.slice(lineAsString.indexOf(' ') + 1);
+            // This kinda needs to check the list and all that jazz.
+            connection.activeRemote = lineAsString.slice(lineAsString.indexOf(' ') + 1);
+	  } else if(firstWord === '%list-remotes') {
+            // Eventually we may cache this
+	    connection.remotes = args['getRemotes'](connection.user);
+	    var reply = 'Remotes:\n';
+	    for(var i=0; i<connection.remotes.length; i++){
+	      reply += connection.remotes[i].name;
+	      reply += '\n';
+	    }
+	    connection.write(reply);
 	  } else {
             connection.write('Huh?\n');
 	  }
 	} else {
 	  // This is meant for a remote.
-	  args['publish']('comm.' + activeRemote, lineAsString);
+	  if(connection.activeRemote){
+	    args['publish']('comm.' + connection.activeRemote, lineAsString);
+	  } else {
+	    connection.write('Not connected to remote! Try: %list-remotes');
+	  }
 	}
       } else {
         var words = lineAsString.split(' ');
