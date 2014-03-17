@@ -19,7 +19,7 @@ describe ('Telnet Server', function(){
     invalidAuthStub = sinon.stub().returns('false');
     subStub = sinon.stub().callsArgWith(1, 'Subscribed');
     pubStub = sinon.stub().returns(1);
-    sessionStub = sinon.stub().returns([{name:'Remote0'}, {name:'Remote1'}, {name:'Remote2'}]); 
+    sessionStub = sinon.stub().callsArgWith(1,[{name:'Remote0'}, {name:'Remote1'}, {name:'Remote2'}]); 
     server.start({port: port, authenticate: authStub, subscribe: subStub, publish: pubStub, getRemotes: sessionStub}, function() {
       done();
     })
@@ -101,6 +101,7 @@ describe ('Telnet Server', function(){
 
     it('displays an error message for invalid credentials');
 
+    it('allows account creation');
   });
  
   describe('Remote World Passthrough', function(){ 
@@ -166,6 +167,9 @@ describe ('Telnet Server', function(){
 	client.write('%list-remotes\n');
 	client.end();
       });
+
+      it('allows the user to add a new remote');
+      it('displays the list of all known servers which can be remoted to');
     });
 
     it('displays the authenticated-user helpfile when prompted');
