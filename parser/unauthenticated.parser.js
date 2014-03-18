@@ -1,7 +1,13 @@
 var log = require('winston');
+var emitter = require('events');
 
 var getUnauthenticatedParser = function(commands){
   return function(line) {
+    // emitter.emit returns true if event had listeners, false otherwise.
+    // This means we can write this as a set of events to emit. 
+    // We try to emit. If it doesn't work, 'Huh?'
+    // The parser is a lookup array followed by an if(emit) {} else { err(huh?); } 
+    // Won't quite work. Can't start hashkeys with special chars.
     
     var words = line.split(' ');
     if(words[0] == 'connect') {
@@ -10,12 +16,7 @@ var getUnauthenticatedParser = function(commands){
 	// We use 'connect username password' because it's standard on MUCK/MUSH.
 	// Other formats and means may exist in vNext.
       commands['authenticate']({username: words[1], password: words[2]}, function(user){
-        commands['connection'].user = user;
-	
-        // TODO: standard subscription handler
-        commands['subscribe']('user.' + commands['connection'].user, function(message){
-          commands['connection'].write(message.toString() + '\n');
-        });
+	 commands['connection'].emit('authentication', user);	
       });
     } else if(words[0] == 'help' || words[0] == '%help') {
       // TODO: Actual helpfile. Should be a separate file loaded by system.
