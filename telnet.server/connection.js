@@ -1,7 +1,8 @@
 var log = require('winston');
 var byline = require('byline');
+var unauthenticatedParser = require('../parser/unauthenticated.parser.js');
 
-var getConnectionHandler = function getConnectionHandler(args){
+var getConnectionHandler = function getConnectionHandler(args) {
   return function(connection){
     // The server has just had a client connect.
     
@@ -11,6 +12,8 @@ var getConnectionHandler = function getConnectionHandler(args){
     var stream = byline.createStream(connection);
     connection.user = null;
     connection.activeRemote = null;
+    args['connection'] = connection;
+    connection.parser = unauthenticatedParser.getUnauthenticatedParser(args);
 
     // We have a connection object. It is a socket. At some point it will end. All good things must.
     connection.on('end', function(){
@@ -75,26 +78,8 @@ var getConnectionHandler = function getConnectionHandler(args){
 	}
       } else {
 	// This is not an authenticated user. We want to get them authenticated.
-	// Our standard means to do this is a username and password.
-	// We use 'connect username password' because it's standard on some of the precursor telnet chat systems.
-	// Other formats and means may exist in vNext.
-        var words = lineAsString.split(' ');
-        if(words[0] == 'connect') {
-          log.info('Authentication request');
-          args['authenticate']({username: words[1], password: words[2]}, function(user){
-            connection.user = user;
-	    // TODO: standard subscription handler
-	    args['subscribe']('user.' + connection.user, function(message){
-              connection.write(message.toString() + '\n');
-	    });
-	  });
-        } else if(words[0] == 'help' || words[0] == '%help') {
-	  // TODO: Actual helpfile. Should be a separate file loaded by system.
-          connection.write('Have some helpfile. Only don\'t.\n');
-	} else {
-          // We don't recognize the command. Push the user toward authentication.
-	  connection.write('Huh? \"connect <username> <password>\" or type \"help\"\n');
-	}
+	// The unauthenticatedParser is good for that.
+	connection.parser(lineAsString);
       }
     });
     // This is sent immediately to the new client on connection.
