@@ -1,6 +1,7 @@
 var log = require('winston');
 var byline = require('byline');
 var unauthenticatedParser = require('../parser/unauthenticated.parser.js');
+var authenticatedParser = require('../parser/authenticated.parser.js');
 
 var getConnectionHandler = function getConnectionHandler(args) {
   return function(connection){
@@ -14,6 +15,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
     connection.activeRemote = null;
     args['connection'] = connection;
     connection.parser = unauthenticatedParser.getUnauthenticatedParser(args);
+    var authedParser = authenticatedParser.getAuthenticatedParser(args);
 
     // We have a connection object. It is a socket. At some point it will end. All good things must.
     connection.on('end', function(){
@@ -36,46 +38,12 @@ var getConnectionHandler = function getConnectionHandler(args) {
        *    Commands meant for the telnet server will be prefaced by an escape character. */
       if(connection.user) {
         // There is an authenticated user.
-	// TODO: Move the '%' into a configurable variable.
-	if(lineAsString.charAt(0) === '%') {
-          // This is our special char! We care about this line, yay!
-	  
-	  // This gets the first 'word' of the line
-	  //  It either slices at the first space, or takes the whole line if there is no space.
-	  var endOfSlice = lineAsString.indexOf(' ');
-	  if(endOfSlice === -1) { endOfSlice = lineAsString.length; }
-          var firstWord = lineAsString.slice(0, endOfSlice);
-
-	  // This is the core of our command parser. It checks for known commands and errors to user if none match.
-	  if(firstWord === '%world') {
-            // This should check connection.remotes to see if it knows about this world. If not, it should error.
-	    // Eventually, this should support partials.
-            connection.activeRemote = lineAsString.slice(lineAsString.indexOf(' ') + 1);
-	  } else if(firstWord === '%list-remotes') {
-            // Eventually we may cache this?
-	    args['getRemotes'](connection.user, function(remotes){
-	      connection.remotes = remotes;
-	      // This is formatting a reply.
-	      var reply = 'Remotes:\n';
-	      for(var i=0; i<connection.remotes.length; i++){
-	        reply += connection.remotes[i].name;
-	        reply += '\n';
-	      }
-	      connection.write(reply);
-	    });
-	  } else {
-            // If we're here, it means we don't recognize this command. This is usually fine and means the user typoed.
-            connection.write('Huh? (Type \'%help\' for help with Mural.)\n');
-	  }
-	} else {
-	  // This does not lead with our special character, and is meant for a remote.
-	  if(connection.activeRemote){
-            // Open question: Do we ever care when a publish complete? i.e. should we provide a callback?
-	    args['publish']('comm.' + connection.activeRemote, lineAsString);
-	  } else {
-	    connection.write('Not connected to remote! Try: %list-remotes');
-	  }
-	}
+	
+	// TODO: We should not be doing this here. It sets it every time we get data.
+	// It's inefficent and bad.
+	// The right way to do this is to have the unauth parser raise an authenticated event which is caught by the connection, which does the setup, but my brain cannot understand custom events right now and I want to build. But this is a hack and a BAD IDEA. FIX IT.
+	connection.parser = authedParser;
+	connection.parser(lineAsString);
       } else {
 	// This is not an authenticated user. We want to get them authenticated.
 	// The unauthenticatedParser is good for that.

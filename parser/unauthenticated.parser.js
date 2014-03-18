@@ -11,6 +11,7 @@ var getUnauthenticatedParser = function(commands){
 	// Other formats and means may exist in vNext.
       commands['authenticate']({username: words[1], password: words[2]}, function(user){
         commands['connection'].user = user;
+	
         // TODO: standard subscription handler
         commands['subscribe']('user.' + commands['connection'].user, function(message){
           commands['connection'].write(message.toString() + '\n');
