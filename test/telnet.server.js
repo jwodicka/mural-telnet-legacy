@@ -133,7 +133,7 @@ describe ('Telnet Server', function(){
     it('displays error to user at unknown system command', function(done){
       var client = net.connect({port: port}, function(connect){
         client.on('data', function(data){
-          if(data.toString().match(/Huh\?/)) {
+          if(data.toString().match(/Huh\? \(Type/)) {
             done();
  	  }
         });

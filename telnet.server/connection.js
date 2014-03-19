@@ -33,6 +33,10 @@ var getConnectionHandler = function getConnectionHandler(args) {
       // In the future, this might be customized by user.
       connection.parser = authenticatedParser.getAuthenticatedParser(args);
     });
+    
+    connection.on('parseError', function(line, message) {
+      connection.write(message);
+    });
 
     stream.on('data', function(line){
       // Our line-based stream has a line for us!  This is a command of some sort from the user.
