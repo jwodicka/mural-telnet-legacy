@@ -1,34 +1,28 @@
 var log = require('winston');
+var events = require('events');
 
-var getAuthenticatedParser = function(commands){
-  commands['connection'].on('connectToWorld', function(worldName){
-    commands['connection'].activeRemote = worldName; 
+var getAuthenticatedParser = function(systemCommands){
+  var localCommands = new events.EventEmitter();
+
+  localCommands.on('connectToWorld', function(worldName){
+    systemCommands.emit('activateRemote', worldName);
   });
 
-  commands['connection'].on('listRemoteWorlds', function(){
+  localCommands.on('listRemoteWorlds', function(){
     // Eventually we may cache this?
-    commands['getRemotes'](commands['connection'].user, function(remotes){
-      commands['connection'].remotes = remotes;
+    systemCommands.emit('queryState', 'remoteWorlds', function(remotes){
       // This is formatting a reply.
       var reply = 'Remotes:\n';
-      for(var i=0; i<commands['connection'].remotes.length; i++){
-        reply += commands['connection'].remotes[i].name;
+      for(var i=0; i<remotes.length; i++){
+        reply += remotes[i].name;
         reply += '\n';
       }
-      commands['connection'].write(reply);
+      systemCommands.emit('messageForUser', reply);
     });
   });
 
-  commands['connection'].on('sendToRemote', function(message, remote) {
-    if(commands['connection'].activeRemote){
-    // Open question: Do we ever care when a publish complete? i.e. should we provide a callback?
-    commands['publish']('comm.' + remote, message);
-    } else {
-      commands['connection'].write('Not connected to remote! Try: %list-remotes');
-    } 
-  });
-
   return function(line) {
+	 // log.info('In authed parser with line: ' + line);
     // This gets the first 'word' of the line
     //  It either slices at the first space, or takes the whole line if there is no space.
     var endOfSlice = line.indexOf(' ');
@@ -40,15 +34,18 @@ var getAuthenticatedParser = function(commands){
 	    '%list-remotes': 'listRemoteWorlds'
     } 
       
-    if(commands['connection'].emit(verbs[firstWord], line)) {
-      
+    if(localCommands.emit(verbs[firstWord], line)) {
+    //  log.info('Emitted event: ' + verbs[firstWord]); 
     } else {
-      if(line.charAt(0) === '%') {
-        // TODO: Check 2nd char; %% to pass through to system regardless.
-        commands['connection'].emit('parseError', line, 'Huh? (Type \'%help\' for help with Mural.)');
+      if(systemCommands.emit(verbs[firstWord], line)) {
       } else {
-      // This does not lead with our special character, and is meant for a remote.
-      commands['connection'].emit('sendToRemote', line, commands['connection'].activeRemote);
+        if(line.charAt(0) === '%') {
+          // TODO: Check 2nd char; %% to pass through to system regardless.
+          systemCommands.emit('parseError', line, 'Huh? (Type \'%help\' for help with Mural.)');
+        } else {
+          // This does not lead with our special character, and is meant for a remote.
+          systemCommands.emit('messageForRemote', '', line);
+	}
       }
     }  
   };

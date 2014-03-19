@@ -47,7 +47,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
       });
       // Changes out the parser this connection uses to an authenticated one.
       // In the future, this might be customized by user.
-      connection.parser = authenticatedParser.getAuthenticatedParser(args);
+      connection.parser = authenticatedParser.getAuthenticatedParser(systemCommands);
     });
 
     systemCommands.on('messageForUser', function(message){
@@ -58,18 +58,34 @@ var getConnectionHandler = function getConnectionHandler(args) {
       if(!target) {
         target = connection.activeRemote;
       }
-      // TODO: Check if we actually do have a target.
-
-      args['publish']('comm.' + target, message);
+      // TODO: Check if target is a valid one.
+      if(target) {
+        args['publish']('comm.' + target, message);
+      } else {
+        systemCommands.emit('parseError', message, 'Not connected to remote! Try: %list-remotes');
+      }
     });
 
     systemCommands.on('queryState', function(request, callback){
       // This is currently a lookup. Eventually this will be an actual DB wrapper.
       // Right now it isn't.
+      // Also it should handle its caching and such.
       var lookup ={
-	    'user': connection.user
+	    'user': function () {callback(connection.user)},
+	    'remoteWorlds':  
+	            args['getRemotes'](connection.user, 
+			    function(remotes) { callback(remotes); })
       }
-      callback(lookup[request]);
+      lookup[request];
+    });
+
+    systemCommands.on('updateState', function(key, value) {
+      // does this have a callback? Is it a sprode? Does it shprongle?
+    });
+
+    systemCommands.on('activateRemote', function(remote) {
+      // This actually wants to establish the connection. We're ignoring that step.
+      connection.activeRemote = remote;
     });
     
     systemCommands.on('parseError', function(line, message){
