@@ -83,8 +83,10 @@ describe ('Telnet Server', function(){
         client.end();
       });
     });
+
+    it('returns a user for valid credentials');
   
-     it('does not pass credentials once authenticated', function(done){
+     it('does not pass credentials ogain once authenticated', function(done){
       var client = net.connect({port: port}, function(connect){
         client.on('close', function(hadError){
           authStub.calledOnce.should.be.okay;
@@ -97,8 +99,11 @@ describe ('Telnet Server', function(){
       });
     });
 
+
+    it('permits authenticated commands after valid credentials');
     it('does not permit authenticated commands after invalid credentials');
 
+    it('does not authenticate invalid credentials');
     it('displays an error message for invalid credentials');
 
     it('allows account creation');

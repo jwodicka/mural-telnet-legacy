@@ -16,7 +16,6 @@ var getConnectionHandler = function getConnectionHandler(args) {
     connection.user = null;
     connection.activeRemote = null;
     args['connection'] = connection;
-    args['subscriber'] = systemCommands;
     connection.parser = unauthenticatedParser.getUnauthenticatedParser(systemCommands);
 
     // We have a connection object. It is a socket. 
@@ -70,6 +69,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
       // This is currently a lookup. Eventually this will be an actual DB wrapper.
       // Right now it isn't.
       // Also it should handle its caching and such.
+      // Also it should implement security.
       var lookup ={
 	    'user': function () {callback(connection.user)},
 	    'remoteWorlds':  
