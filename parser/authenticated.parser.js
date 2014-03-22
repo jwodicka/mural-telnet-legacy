@@ -13,12 +13,11 @@ var getAuthenticatedParser = function(systemCommands, getStringFor){
     // Eventually we may cache this?
     systemCommands.emit('queryState', 'remoteWorlds', function(remotes){
       // This is formatting a reply.
-      var reply = 'Remotes:\n';
-      for(var i=0; i<remotes.length; i++){
-        reply += remotes[i].name;
-        reply += '\n';
-      }
-      systemCommands.emit('messageForUser', reply);
+      systemCommands.emit('messageForUser', 
+	      tex.t("remotes.list",  {worlds: remotes.reduce(function(a, b){
+	      	return a.toString() + b.toString() + '\n'; })
+	      })
+      );
     });
   });
 

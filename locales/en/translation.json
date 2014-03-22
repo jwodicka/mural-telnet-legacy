@@ -14,6 +14,7 @@
 		}
 	},
 	"remotes": {
-		"not connected": "Not connected to remote! Try: %list-remotes\n"
+		"not connected": "Not connected to remote! Try: %list-remotes\n",
+		"list": "Remotes:\n__world__"
 	}
 }
