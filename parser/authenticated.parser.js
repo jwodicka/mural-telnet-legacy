@@ -1,7 +1,8 @@
 var log = require('winston');
 var events = require('events');
+var tex = require('i18next');
 
-var getAuthenticatedParser = function(systemCommands){
+var getAuthenticatedParser = function(systemCommands, getStringFor){
   var localCommands = new events.EventEmitter();
 
   localCommands.on('connectToWorld', function(worldName){
@@ -41,7 +42,7 @@ var getAuthenticatedParser = function(systemCommands){
       } else {
         if(line.charAt(0) === '%') {
           // TODO: Check 2nd char; %% to pass through to system regardless.
-          systemCommands.emit('parseError', line, 'Huh? (Type \'%help\' for help with Mural.)');
+          systemCommands.emit('parseError', line, tex.t("frontend.error.command not found"));
         } else {
           // This does not lead with our special character, and is meant for a remote.
           systemCommands.emit('messageForRemote', '', line);

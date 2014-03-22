@@ -151,7 +151,7 @@ describe ('Telnet Server', function(){
     it('does not accept system commands without an authenticated user', function(done){
       var client = net.connect({port: port}, function(connect){
         client.on('data', function(data){
-          if(data.toString().match(/Huh\? \"connect/)){      
+          if(data.toString().match(/Huh\? \'connect/)){      
   	    done();
           }
         });

@@ -1,5 +1,6 @@
 var log = require('winston');
 var events = require('events');
+var tex = require('i18next');
 
 var getUnauthenticatedParser = function(systemCommands){
   //checking properties, done with a callback. Writing to user, done via events.
@@ -7,9 +8,9 @@ var getUnauthenticatedParser = function(systemCommands){
   // Also: passthroughs to other parsers. Some pass through. Others don't.
   var localCommands = new events.EventEmitter();
 
-  localCommands.on('helpfile', function(words) {
+  localCommands.on('help', function(words) {
     // TODO: Actual helpfile. Should be a separate file loaded by system.
-    systemCommands.emit('messageForUser', 'Have some helpfile. Only don\'t.\n');
+    systemCommands.emit('messageForUser', tex.t("authentication.help.help"));
   });
 
   return function(line) {
@@ -18,8 +19,8 @@ var getUnauthenticatedParser = function(systemCommands){
     // We try to emit. If it doesn't work, 'Huh?'
     var verbs = {
 	    'connect': 'authenticate', 
-	    'help': 'helpfile', 
-	    '%help': 'helpfile'
+	    'help': 'help', 
+	    '%help': 'help'
     };
 
     var words = line.split(' ');
@@ -28,7 +29,7 @@ var getUnauthenticatedParser = function(systemCommands){
       if(systemCommands.emit(verbs[words[0]], words)) {
       } else {
         // We don't recognize the command. Provide the problem line and a default message.
-        systemCommands.emit('parseError', line, 'Huh? \"connect <username> <password>\" or type \"help\"\n');
+        systemCommands.emit('parseError', line, tex.t("authentication.error.command not found"));
       }
     }
   }

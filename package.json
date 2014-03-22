@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "byline": "*",
-    "winston": "*"
+    "winston": "*",
+    "i18next": "*"
   },
   "devDependencies": {
     "istanbul": "*",

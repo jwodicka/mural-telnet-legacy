@@ -3,6 +3,7 @@ var byline = require('byline');
 var unauthenticatedParser = require('../parser/unauthenticated.parser.js');
 var authenticatedParser = require('../parser/authenticated.parser.js');
 var events = require('events');
+var tex = require('i18next');
 
 var getConnectionHandler = function getConnectionHandler(args) {
   return function(connection){
@@ -16,6 +17,10 @@ var getConnectionHandler = function getConnectionHandler(args) {
     connection.user = null;
     connection.activeRemote = null;
     args['connection'] = connection;
+    tex.init({ lng: 'en', getAsynch: false, 
+	    resGetPath: 'locales/__lng__/__ns___.json' });
+    var getStringFor = function(key){ return tex.t(key); };
+
     connection.parser = unauthenticatedParser.getUnauthenticatedParser(systemCommands);
 
     // We have a connection object. It is a socket. 
@@ -46,7 +51,11 @@ var getConnectionHandler = function getConnectionHandler(args) {
       });
       // Changes out the parser this connection uses to an authenticated one.
       // In the future, this might be customized by user.
-      connection.parser = authenticatedParser.getAuthenticatedParser(systemCommands);
+      connection.parser = 
+	    authenticatedParser.getAuthenticatedParser(
+		    systemCommands, getStringFor
+		//    function(t){ return 'ping?'; }
+	    );
     });
 
     systemCommands.on('messageForUser', function(message){
@@ -61,7 +70,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
       if(target) {
         args['publish']('comm.' + target, message);
       } else {
-        systemCommands.emit('parseError', message, 'Not connected to remote! Try: %list-remotes');
+        systemCommands.emit('parseError', message, tex.t("remotes.not connected"));
       }
     });
 
@@ -102,7 +111,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
       connection.parser(lineAsString);
     });
     // This is sent immediately to the new client on connection.
-    connection.write('Welcome to Mural!\n');
+    connection.write(tex.t("frontend.welcome banner"));
   };
 }
 exports.getConnectionHandler = getConnectionHandler;
