@@ -67,6 +67,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
         target = connection.activeRemote;
       }
       // TODO: Check if target is a valid one.
+      log.info('Target world: ' + target);
       if(target) {
         args['publish']('comm.' + target, message);
       } else {

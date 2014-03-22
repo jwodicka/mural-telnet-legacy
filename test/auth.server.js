@@ -25,4 +25,12 @@ describe ('Auth Server', function(){
 		    done();
 	    });
   });
+
+  it('does not authenticate a username with no password', function(done){
+    auth.authenticate({username: 'testUser'},
+	    function(user) {
+		    user.should.be.false;
+		    done();
+	    });
+  });
 });

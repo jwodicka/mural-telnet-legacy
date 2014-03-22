@@ -6,7 +6,7 @@ var getAuthenticatedParser = function(systemCommands, getStringFor){
   var localCommands = new events.EventEmitter();
 
   localCommands.on('connectToWorld', function(worldName){
-    systemCommands.emit('activateRemote', worldName);
+    systemCommands.emit('activateRemote', worldName.slice(worldName.indexOf(' ') + 1, worldName.length));
   });
 
   localCommands.on('listRemoteWorlds', function(){
@@ -21,6 +21,10 @@ var getAuthenticatedParser = function(systemCommands, getStringFor){
     });
   });
 
+  localCommands.on('help', function(){
+    systemCommands.emit('messageForUser', tex.t("frontend.help.help"));
+  });
+
   return function(line) {
 	 // log.info('In authed parser with line: ' + line);
     // This gets the first 'word' of the line
@@ -31,7 +35,8 @@ var getAuthenticatedParser = function(systemCommands, getStringFor){
     
     var verbs = {
 	    '%world': 'connectToWorld',
-	    '%list-remotes': 'listRemoteWorlds'
+	    '%list-remotes': 'listRemoteWorlds',
+	    '%help': 'help'
     } 
       
     if(localCommands.emit(verbs[firstWord], line)) {

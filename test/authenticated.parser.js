@@ -19,17 +19,40 @@ describe('Authenticated Parser', function(){
       });
   });
 
+  beforeEach(function(){
+    systemCommands.removeAllListeners();
+  });
+
   it('lists remote worlds when requested');
-  it('requests association to a remote world when requested');
-  it('displays a helpfile when requested');
+
+
+  it('requests association to a remote world when requested', 
+    function(done){
+      systemCommands.on('activateRemote', function(remote){
+        remote.should.match('testWorld');
+        done();
+      });
+    authedParser('%world testWorld');
+  }); 
+	  
+  it('displays a helpfile when requested',
+    function(done){
+      systemCommands.on('messageForUser', function(message){
+        message.should.match(i18n.t("frontend.help.help"));
+        done();
+      });
+    authedParser('%help');
+  }); 
+
   it('passes messages not matching the pattern to a remote world');
-  it('displays an error when a non-matching pattern is given with no remote world');
-  it('displays an error on a matching pattern without associated command', function(done){
-    systemCommands.on('parseError', function(line, message){
-      line.should.match(/%SHPRONGLE!/);
-      message.should.match(i18n.t("frontend.error.command not found"));
-      done();
-    });
+
+  it('displays an error on a matching pattern without associated command', 
+    function(done){
+      systemCommands.on('parseError', function(line, message){
+        line.should.match(/%SHPRONGLE!/);
+        message.should.match(i18n.t("frontend.error.command not found"));
+        done();
+      });
     authedParser('%SHPRONGLE!');
   }); 
 });

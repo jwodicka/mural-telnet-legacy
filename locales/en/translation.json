@@ -3,6 +3,9 @@
 		"welcome banner": "Welcome to Mural!\n",
 		"error": {
 			"command not found": "Huh? (Type '%help' for help with Mural.)\n"
+		},
+		"help": {
+			"help": "This is a helpfile for Mural. It needs to be written."
 		}
 	},
 	"authentication": {
