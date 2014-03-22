@@ -31,11 +31,13 @@
   "devDependencies": {
     "istanbul": "*",
     "mocha": "*",
+    "nodelint": "*",
     "should": "*",
     "sinon": "*"
   },
   "scripts": {
     "test": "istanbul cover _mocha",
+    "lint": "nodelint *.js *.json locales/*/*.json parser/*.js telnet.server/*.js test/*.js",
     "install": "scripts/install-redis.sh",
     "install-redis": "scripts/install-redis.sh"
   }
