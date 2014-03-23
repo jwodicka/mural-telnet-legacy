@@ -1,23 +1,23 @@
 {
-	"frontend": {
-		"welcome banner": "Welcome to Mural!\n",
-		"error": {
-			"command not found": "Huh? (Type '%help' for help with Mural.)\n"
-		},
-		"help": {
-			"help": "This is a helpfile for Mural. It needs to be written."
-		}
-	},
-	"authentication": {
-		"help": {
-			"help": "Have some helpfile! Only don't.\n"
-		},
-		"error": {
-			"command not found": "Huh? 'connect <username> <password>' or '%help'"
-		}
-	},
-	"remotes": {
-		"not connected": "Not connected to remote! Try: %list-remotes\n",
-		"list": "Remotes:\n__world__"
-	}
+      "frontend": {
+            "welcome banner": "Welcome to Mural!\n",
+            "error": {
+                  "command not found": "Huh? (Type '%help' for help with Mural.)\n"
+            },
+            "help": {
+                  "help": "This is a helpfile for Mural. It needs to be written."
+            }
+      },
+      "authentication": {
+            "help": {
+                  "help": "Have some helpfile! Only don't.\n"
+            },
+            "error": {
+                  "command not found": "Huh? 'connect <username> <password>' or '%help'"
+            }
+      },
+      "remotes": {
+            "not connected": "Not connected to remote! Try: %list-remotes\n",
+            "list": "Remotes: \n__world__"
+      }
 }

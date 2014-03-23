@@ -1,10 +1,12 @@
+'use strict';
+/*global describe: false, it: false, before: false, beforeEach, false */
 var destServer = require('../destination.server/destination.server.js');
 var winston = require('winston');
 var sinon = require('sinon');
 
-describe('Destination Server', function(){
-/*  before(function(done){
-    destServer.start('', function(){
+describe('Destination Server', function () {
+/*  before(function (done) {
+    destServer.start('', function () {
       done();
     });
   });

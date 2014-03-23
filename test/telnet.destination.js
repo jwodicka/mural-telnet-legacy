@@ -1,10 +1,12 @@
+'use strict';
+/*global describe: false, it: false */
 var telnetDestination = require('../telnet.destination/telnet.destination.js');
 var destination = require('./destination.js');
 var winston = require('winston');
 
-describe('Telnet Destination', function(){
+describe('Telnet Destination', function () {
 /*  before(function(done){
-    telnetDestination.start('', function(){
+    telnetDestination.start('', function () {
       done();
     });
   });

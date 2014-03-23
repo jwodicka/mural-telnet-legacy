@@ -1,10 +1,12 @@
+'use strict';
+/*global describe: false, it: false, before: false, beforeEach, false */
 var pubsub = require('../pubsub/pubsub.js');
 var winston = require('winston');
 var sinon = require('sinon');
 
-describe('Pubsub', function(){
-/*  before(function(done){
-    pubsub.start('', function(){
+describe('Pubsub', function () {
+/*  before(function (done) {
+    pubsub.start('', function () {
       done();
     });
   });

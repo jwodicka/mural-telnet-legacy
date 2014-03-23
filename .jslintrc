@@ -1,0 +1,9 @@
+{
+    "evil":false,
+    "indent":2,
+    "node":true,
+    "vars":true,
+    "passfail":false,
+    "plusplus":false,
+    "white":false
+}

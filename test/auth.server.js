@@ -1,36 +1,38 @@
+'use strict';
+/*global describe: false, it: false, before: false, beforeEach, false */
 var auth = require('../auth.server/auth.js');
 var winston = require('winston');
 // winston.remove(winston.transports.Console); // Don't log to the console during tests!
 var sinon = require('sinon');
 
-describe ('Auth Server', function(){
-  before(function(done){
-    auth.start('', function(){ 
-	    done();
+describe('Auth Server', function () {
+  before(function (done) {
+    auth.start('', function () {
+      done();
     });
   });
 
-  it('provides a user when given a valid username and password', function(done){
-    auth.authenticate({username: 'testUser', password: 'testPassword'}, 
-	    function(user) {
-		    user.should.equal('testUser');
-		    done();
-	    });
+  it('provides a user when given a valid username and password', function (done) {
+    auth.authenticate({username: 'testUser', password: 'testPassword'},
+      function (user) {
+        user.should.equal('testUser');
+        done();
+      });
   });
 
-  it('does not provide a user from an invalid username and password', function(done){
+  it('does not provide a user from an invalid username and password', function (done) {
     auth.authenticate({username: 'testUser', password: 'wrongPassword'},
-	    function(user) {
-		    user.should.be.false;
-		    done();
-	    });
+      function (user) {
+        user.should.be.false;
+        done();
+      });
   });
 
-  it('does not authenticate a username with no password', function(done){
+  it('does not authenticate a username with no password', function (done) {
     auth.authenticate({username: 'testUser'},
-	    function(user) {
-		    user.should.be.false;
-		    done();
-	    });
+      function (user) {
+        user.should.be.false;
+        done();
+      });
   });
 });
