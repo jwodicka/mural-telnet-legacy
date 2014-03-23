@@ -3,7 +3,7 @@ var log = require('winston');
 var events = require('events');
 var tex = require('i18next');
 
-var getAuthenticatedParser = function (systemCommands, getStringFor) {
+var getAuthenticatedParser = function (systemCommands) {
   var localCommands = new events.EventEmitter();
 
   localCommands.on('connectToWorld', function (worldName) {

@@ -20,7 +20,6 @@ var getConnectionHandler = function getConnectionHandler(args) {
     args.connection = connection;
     tex.init({ lng: 'en', getAsynch: false,
           resGetPath: 'locales/__lng__/__ns___.json' });
-    var getStringFor = function (key) { return tex.t(key); };
 
     connection.parser = unauthenticatedParser.getUnauthenticatedParser(systemCommands);
 
@@ -54,9 +53,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
       // In the future, this might be customized by user.
       connection.parser =
         authenticatedParser.getAuthenticatedParser(
-          systemCommands,
-          getStringFor
-          //    function (t) { return 'ping?'; }
+          systemCommands
         );
     });
 
