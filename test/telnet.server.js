@@ -165,13 +165,13 @@ describe('Telnet Server', function () {
     it('displays a list of remotes when prompted', function (done) {
       var client = net.connect({port: port}, function () {
         client.on('data', function (data) {
-          if (data.toString().match(/Remotes/)) {
+          if (data.toString().match(/Destinations/)) {
             sessionStub.calledWith('testUser').should.be.ok;
             done();
           }
         });
         client.write('connect testUser testPassword\n');
-        client.write('%list-remotes\n');
+        client.write('%list-destinations\n');
         client.end();
       });
 

@@ -30,8 +30,8 @@ describe('Authenticated Parser', function () {
 
   it('requests association to a remote world when requested',
     function (done) {
-      systemCommands.on('activateRemote', function (remote) {
-        remote.should.match('testWorld');
+      systemCommands.on('activateDestination', function (destination) {
+        destination.should.match('testWorld');
         done();
       });
       authedParser('%world testWorld');

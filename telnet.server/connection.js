@@ -16,7 +16,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
     var stream = byline.createStream(connection);
     var systemCommands = new events.EventEmitter();
     connection.user = null;
-    connection.activeRemote = null;
+    connection.activeDestination = null;
     args.connection = connection;
     tex.init({ lng: 'en', getAsynch: false,
           resGetPath: 'locales/__lng__/__ns___.json' });
@@ -61,16 +61,16 @@ var getConnectionHandler = function getConnectionHandler(args) {
       connection.write(message);
     });
 
-    systemCommands.on('messageForRemote', function (target, message) {
+    systemCommands.on('messageForDestination', function (target, message) {
       if (!target) {
-        target = connection.activeRemote;
+        target = connection.activeDestination;
       }
       // TODO: Check if target is a valid one.
-      log.info('Target world: ' + target);
+      log.info('Target destination: ' + target);
       if (target) {
         args.publish('comm.' + target, message);
       } else {
-        systemCommands.emit('parseError', message, tex.t("remotes.not connected"));
+        systemCommands.emit('parseError', message, tex.t("destinations.not connected"));
       }
     });
 
@@ -81,9 +81,9 @@ var getConnectionHandler = function getConnectionHandler(args) {
       // Also it should implement security.
       var lookup = {
         'user': function () {callback(connection.user); },
-        'remoteWorlds':
+        'destinations':
           args.getRemotes(connection.user,
-            function (remotes) { callback(remotes); })
+            function (destinations) { callback(destinations); })
       };
       lookup[request];
     });
@@ -92,9 +92,9 @@ var getConnectionHandler = function getConnectionHandler(args) {
       // does this have a callback? Is it a sprode? Does it shprongle?
     });
 
-    systemCommands.on('activateRemote', function (remote) {
+    systemCommands.on('activateDestination', function (destination) {
       // This actually wants to establish the connection. We're ignoring that step.
-      connection.activeRemote = remote;
+      connection.activeDestination = destination;
     });
 
     systemCommands.on('parseError', function (line, message) {

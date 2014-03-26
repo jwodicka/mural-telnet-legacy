@@ -6,17 +6,17 @@ var tex = require('i18next');
 var getAuthenticatedParser = function (systemCommands) {
   var localCommands = new events.EventEmitter();
 
-  localCommands.on('connectToWorld', function (worldName) {
-    systemCommands.emit('activateRemote', worldName.slice(worldName.indexOf(' ') + 1, worldName.length));
+  localCommands.on('connectToDestination', function (worldName) {
+    systemCommands.emit('activateDestination', worldName.slice(worldName.indexOf(' ') + 1, worldName.length));
   });
 
-  localCommands.on('listRemoteWorlds', function () {
+  localCommands.on('listDestinations', function () {
     // Eventually we may cache this?
-    systemCommands.emit('queryState', 'remoteWorlds', function (remotes) {
+    systemCommands.emit('queryState', 'destinations', function (destinations) {
       // This is formatting a reply.
       systemCommands.emit('messageForUser', tex.t(
-        "remotes.list",
-        {worlds: remotes.reduce(
+        "destinations.list",
+        {worlds: destinations.reduce(
           function (a, b) {
             return a.toString() + b.toString() + '\n';
           }
@@ -38,8 +38,8 @@ var getAuthenticatedParser = function (systemCommands) {
     var firstWord = line.slice(0, endOfSlice);
 
     var verbs = {
-      '%world': 'connectToWorld',
-      '%list-remotes': 'listRemoteWorlds',
+      '%world': 'connectToDestination',
+      '%list-destinations': 'listDestinations',
       '%help': 'help'
     };
 
@@ -53,7 +53,7 @@ var getAuthenticatedParser = function (systemCommands) {
           systemCommands.emit('parseError', line, tex.t("frontend.error.command not found"));
         } else {
           // This does not lead with our special character, and is meant for a remote.
-          systemCommands.emit('messageForRemote', '', line);
+          systemCommands.emit('messageForDestination', '', line);
         }
       }
     }

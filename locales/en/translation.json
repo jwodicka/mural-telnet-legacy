@@ -16,8 +16,8 @@
                   "command not found": "Huh? 'connect <username> <password>' or '%help'"
             }
       },
-      "remotes": {
-            "not connected": "Not connected to remote! Try: %list-remotes\n",
-            "list": "Remotes: \n__world__"
+      "destinations": {
+            "not connected": "Not connected to destination! Try: %list-destinations\n",
+            "list": "Destinations: \n__world__"
       }
 }
