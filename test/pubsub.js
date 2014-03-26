@@ -1,27 +1,62 @@
 'use strict';
 /*global describe: false, it: false, before: false, beforeEach, false */
-var pubsub = require('../pubsub/pubsub.js');
 var winston = require('winston');
 var sinon = require('sinon');
+var events = require('events');
+var pubsub = require('../pubsub/pubsub.js');
+
+var client;
 
 describe('Pubsub', function () {
-/*  before(function (done) {
-    pubsub.start('', function () {
-      done();
-    });
+  before(function (done) {
+    done();
   });
-*/
-  it('accepts a subscription to a channel');
 
-  it('errors on a subscription with no channel');
+  beforeEach(function (done) {
+    // We need to reset the subscriptions.
+    pubsub.removeAllListeners();
+    done();
+  });
 
-  it('allows subscriptions to multiple channels');
 
-  it('accepts a publication to a channel');
+  it('accepts a subscription to a channel', function (done) {
+    pubsub.on('test channel', function (message) {
+    });
+    events.EventEmitter.listenerCount(pubsub, 'test channel').should.equal(1);
+    done();
+  });
+
+  it('errors on a subscription with no channel'/*, function (done) {
+    pubsub.on(null, function (message) {
+    });
+    done();
+  }*/);
+
+  it('allows subscriptions to multiple channels', function (done) {
+    pubsub.on('test channel', function (message) {
+    });
+    
+    pubsub.on('another channel', function (message) {
+    });
+    events.EventEmitter.listenerCount(pubsub, 'test channel').should.equal(1);
+    events.EventEmitter.listenerCount(pubsub, 'another channel').should.equal(1);
+    done();
+    });
+
+  it('accepts a publication to a channel', function (done) {
+    pubsub.emit('test channel', 'message');
+    done();
+  });
 
   it('errors on a publication with no channel');
 
-  it('delivers message to subscriber on its channel');
+  it('delivers message to subscriber on its channel', function (done) {
+    pubsub.on('test channel', function (message) {
+      message.should.match('test message');
+      done();
+    });
+    pubsub.emit('test channel', 'test message');
+  });
 
   it('delivers message to multiple subscribers');
 
