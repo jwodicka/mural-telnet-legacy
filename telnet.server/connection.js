@@ -7,7 +7,7 @@ var events = require('events');
 var tex = require('i18next');
 
 var getConnectionHandler = function getConnectionHandler(args) {
-  return function (connection) {
+  return function connectionHandler(connection) {
     // The server has just had a client connect.
 
     // We do some setup, including giving it a random ID and a stream so we can work with lines instead of raw data.
@@ -46,7 +46,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
     connection.on('authentication', function (user) {
       connection.user = user;
       // TODO: standard subscription handler
-      args.subscribe('user.' + args.connection.user, function (message) {
+      args.pubsub.on('user.' + connection.user, function (message) {
         connection.write(message.toString() + '\n');
       });
       // Changes out the parser this connection uses to an authenticated one.
@@ -67,8 +67,8 @@ var getConnectionHandler = function getConnectionHandler(args) {
       }
       // TODO: Check if target is a valid one.
       log.info('Target destination: ' + target);
-      if (target) {
-        args.publish('comm.' + target, message);
+      if (target) {  
+        args.pubsub.emit('comm.' + target, message);
       } else {
         systemCommands.emit('parseError', message, tex.t("destinations.not connected"));
       }

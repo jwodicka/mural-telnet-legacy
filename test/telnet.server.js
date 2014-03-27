@@ -3,14 +3,16 @@
 var server = require('../telnet.server/server.js');
 var winston = require('winston');
 winston.remove(winston.transports.Console); // Don't log to the console during tests!
+require('better-stack-traces').install();
 var sinon = require('sinon');
 var net = require('net');
+var pubsub = require('../pubsub/pubsub.js');
 
 
 var port = 8888;
 var authStub;
-var subStub;
-var pubStub;
+// var subStub;
+// var pubStub;
 var invalidAuthStub;
 var sessionStub;
 
@@ -19,10 +21,10 @@ describe('Telnet Server', function () {
     // server.start should take an associative array of values (including a port number) and a callback,  and execute the callback once the server is running.
     authStub = sinon.stub().callsArgWith(1, 'testUser');
     invalidAuthStub = sinon.stub().returns('false');
-    subStub = sinon.stub().callsArgWith(1, 'Subscribed');
-    pubStub = sinon.stub().returns(1);
+ //   subStub = sinon.stub().callsArgWith(1, 'Subscribed');
+ //   pubStub = sinon.stub().returns(1);
     sessionStub = sinon.stub().callsArgWith(1, [{name: 'Remote0'}, {name: 'Remote1'}, {name: 'Remote2'}]);
-    server.start({port: port, authenticate: authStub, subscribe: subStub, publish: pubStub, getRemotes: sessionStub}, function () {
+    server.start({port: port, authenticate: authStub, pubsub: pubsub, getRemotes: sessionStub}, function () {
       done();
     });
   });
@@ -30,8 +32,8 @@ describe('Telnet Server', function () {
   beforeEach(function () {
     invalidAuthStub.reset();
     authStub.reset();
-    pubStub.reset();
-    subStub.reset();
+//    pubStub.reset();
+//    subStub.reset();
   });
 
   it('accepts a connection', function (done) {
@@ -114,16 +116,19 @@ describe('Telnet Server', function () {
   describe('Remote World Passthrough', function () {
 
     it('publishes messages to a remote PoP', function (done) {
-      var client = net.connect({port: port}, function () {
-        client.on('close', function (hadError) {
-          pubStub.calledWith('comm.TestWorld', 'Test Line').should.be.ok;
-          hadError.should.be.false;
-          done();
-        });
+      pubsub.on('comm.TestWorld', function (message) {
+        winston.info('In the listener!');
+        client.end();
+        done();
+      });
+      var client = net.connect({port: port}, function() {
         client.write('connect testUser testPassword\n');
         client.write('%world TestWorld\n');
         client.write('Test Line\n');
-        client.end();
+        
+        //client.end();
+        
+        // winston.info('and now we wait for callback' + pubsub.listeners('comm.TestWorld').toString());
       });
     });
 
@@ -189,7 +194,8 @@ describe('Telnet Server', function () {
     var client = net.connect({port: port}, function () {
       client.on('close', function () {
         authStub.calledOnce.should.be.ok;
-        subStub.calledWith('user.testUser').should.be.ok;
+        pubsub.listeners('user.testUser').should.be.ok;
+        //subStub.calledWith('user.testUser').should.be.ok;
         done();
       });
       client.write('connect testUser testPassword\n');
