@@ -30,5 +30,12 @@ echoChat.activate = function echoChatActivate(PoP, callback) {
   });
   callback();
 };
+echoChat.PoPsForUser = function (user) {
+  return [{
+    'name': user.name, 
+    'destination': 'EchoChat', 
+    'description': 'The echoingest eecho chamber what ever echoed'
+  }];
+};
 
 module.exports = echoChat;

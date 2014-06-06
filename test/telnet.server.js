@@ -2,7 +2,7 @@
 /*global describe: false, it: false, before: false, beforeEach, false */
 var server = require('../telnet.server/server.js');
 var winston = require('winston');
-winston.remove(winston.transports.Console); // Don't log to the console during tests!
+//winston.remove(winston.transports.Console); // Don't log to the console during tests!
 require('better-stack-traces').install();
 var sinon = require('sinon');
 var net = require('net');
