@@ -28,6 +28,7 @@ echoChat.activate = function echoChatActivate(PoP, callback) {
       echoChat.pubsub.emit('comm.echoChat.' + PoP, newMessage);
     }
   });
+
   callback();
 };
 echoChat.PoPsForUser = function (user) {

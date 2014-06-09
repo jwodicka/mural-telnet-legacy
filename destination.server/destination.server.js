@@ -26,7 +26,8 @@ destinationServer.createDestination = function (destinationOptions, callback) {
     'id': destinationID,
     'name': destinationOptions.name,
     'description': destinationOptions.description,
-    'start': destinationOptions.start
+    'start': destinationOptions.start,
+    'startPoP': destinationOptions.startPoP
   };
   // Check who added this destination. 
   // If they are capable of creating non-private, set it according to the options.
@@ -52,7 +53,12 @@ destinationServer.createPoP = function (userID, options, callback) {
     'name': options.name, 
     'id': PoPID, 
     'destinationID': options.destinationID,
-    'start': options.start
+    'start': function () { 
+        destinationServer.destinations[options.destinationID].startPoP(PoPID, function () {
+          destinationServer.pubsub.emit(PoPID, 
+            {from: PoPID, message: options.name + ' is active.'});
+        });
+      }
   };
   if(destinationServer.users[userID] == undefined) {
     destinationServer.users[userID] = {};
@@ -77,10 +83,10 @@ destinationServer.activatePoP = function (userID, PoPID) {
   // Check if it's a valid PoP for this user!
  
   var destinationID = destinationServer.users[userID][PoPID].destinationID;
-  //log.info('destinationID from PoPID: ' + destinationID);
+  log.info('destinationID from PoPID: ' + destinationID);
   destinationServer.destinations[destinationID].start(destinationServer.pubsub, function () {
-    //log.info('activating at Destination: ' + destinationID);
-    destinationServer.pubsub.emit(destinationID, PoPID);
+    log.info('activating at Destination: ' + destinationID);
+    destinationServer.users[userID][PoPID].start();
   });
 };
 
