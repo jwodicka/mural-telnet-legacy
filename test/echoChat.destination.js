@@ -36,7 +36,7 @@ describe('Echo Chat', function () {
 */
   it('echoes a message it receives', function (done) {
  //   echoChat.activate('TestUser', function () {
-      pubsub.on('comm.echoChat.TestUser', function (message) {
+      pubsub.on('TestUser', function (message) {
         winston.info('in the test callback with message from ' + message.from);
         if(message.from === 'EchoChat') {
           message.message.should.match(testMessage.message);
@@ -44,18 +44,18 @@ describe('Echo Chat', function () {
         }
       });
      winston.info('About to send a message from the test'); 
-     pubsub.emit('comm.echoChat.TestUser', testMessage);
+     pubsub.emit('TestUser', testMessage);
  //   });
   });
 
   it('echoes a message it recieved to another user', function (done) {
  //   echoChat.activate('TestUser', function () {
       echoChat.activate('User2', function () {
-        pubsub.on('comm.echoChat.User2', function (message) {
+        pubsub.on('User2', function (message) {
           message.message.should.match(testMessage.message);
           done();
         });
-        pubsub.emit('comm.echoChat.TestUser', testMessage);
+        pubsub.emit('TestUser', testMessage);
       });
    // });
   });

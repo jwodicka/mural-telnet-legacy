@@ -10,12 +10,12 @@ echoChat.start = function echoChatStart(pubsub, callback) {
 };
 
 echoChat.activate = function echoChatActivate(PoP, callback) {
-  log.info('in activate');
-  echoChat.pubsub.on('comm.echoChat.' + PoP, function (message) {
-    log.info('in echochat pubsub with message from: ' + message.from);
+  //log.info('in activate');
+  echoChat.pubsub.on(PoP, function (message) {
+    //log.info('in echochat pubsub with message from: ' + message.from);
     if(message.from !== 'EchoChat') {
-      log.info('about to emit internal message from ' + message.from);
-      log.info('there are ' + events.EventEmitter.listenerCount(echoChat, 'echochat internal message') + ' listeners');
+      //log.info('about to emit internal message from ' + message.from);
+      //log.info('there are ' + events.EventEmitter.listenerCount(echoChat, 'echochat internal message') + ' listeners');
       echoChat.emit('echochat internal message', message);
     }
   });
@@ -23,20 +23,20 @@ echoChat.activate = function echoChatActivate(PoP, callback) {
     log.info(message.message + ' from ' + message.from);
     if(message.from !== 'EchoChat') {
       var newMessage = {from: 'EchoChat', message: message.message};
-      log.info('Sending message to: comm.echoChat.' + PoP);
-      log.info('there are ' + events.EventEmitter.listenerCount(echoChat.pubsub, 'comm.echoChat.' + PoP) + ' listeners');
-      echoChat.pubsub.emit('comm.echoChat.' + PoP, newMessage);
+      //log.info('Sending message to: comm.echoChat.' + PoP);
+      //log.info('there are ' + events.EventEmitter.listenerCount(echoChat.pubsub, 'comm.echoChat.' + PoP) + ' listeners');
+      echoChat.pubsub.emit(PoP, newMessage);
     }
   });
 
   callback();
 };
-echoChat.PoPsForUser = function (user) {
-  return [{
-    'name': user.name, 
-    'destination': 'EchoChat', 
-    'description': 'The echoingest eecho chamber what ever echoed'
-  }];
-};
+//echoChat.PoPsForUser = function (user) {
+//  return [{
+//    'name': user.name, 
+//    'destination': 'EchoChat', 
+//    'description': 'The echoingest eecho chamber what ever echoed'
+//  }];
+//};
 
 module.exports = echoChat;

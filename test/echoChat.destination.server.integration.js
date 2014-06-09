@@ -27,18 +27,25 @@ describe('Destination Server', function() {
   });
 
   it('activates an echoChat PoP when requested by a user', function (done) {
-    destServer.createDestination({start: echoChat.start, startPoP: echoChat.activate}, function (destID) { 
-      destServer.createPoP(
-        'TestUserID', 
-        {destinationID: destID}, 
-        function (PoPID) {  
-          pubsub.on(PoPID, function (message) {
-            done();
+    destServer.createDestination(
+      {
+        start: echoChat.start, 
+        startPoP: echoChat.activate
+      }, 
+      function (destID) { 
+        destServer.createPoP(
+          'TestUserID', 
+          {destinationID: destID}, 
+          function (PoPID) {  
+            pubsub.on(PoPID, function (message) {
+              if(message.message.match(/is active/) && message.from === 'EchoChat') {
+                done();
+              }
+            });
+            destServer.activatePoP('TestUserID', PoPID);
           });
-        destServer.activatePoP('TestUserID', PoPID);
-      });
-    });
-     
+      }
+    );
   });
 
   it('receives an echoed message when a message is sent to echoChat');

@@ -64,7 +64,7 @@ destinationServer.createPoP = function (userID, options, callback) {
     destinationServer.users[userID] = {};
   }
   destinationServer.users[userID][PoPID] = PoP;
-  callback(PoP.id);
+  callback(PoPID);
 };
 
 destinationServer.listPoPs = function (userID, options, callback) {
