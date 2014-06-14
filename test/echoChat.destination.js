@@ -22,7 +22,7 @@ describe('Echo Chat', function () {
 
   beforeEach(function (done) {
     pubsub.removeAllListeners();
-    echoChat.activate('TestUser', function () { done(); });
+    echoChat.activate('TestUser', {}, function () { done(); });
   });
 /*  
   it('activates a PoP', function (done) {
@@ -50,7 +50,7 @@ describe('Echo Chat', function () {
 
   it('echoes a message it recieved to another user', function (done) {
  //   echoChat.activate('TestUser', function () {
-      echoChat.activate('User2', function () {
+      echoChat.activate('User2', {}, function () {
         pubsub.on('User2', function (message) {
           message.message.should.match(testMessage.message);
           done();

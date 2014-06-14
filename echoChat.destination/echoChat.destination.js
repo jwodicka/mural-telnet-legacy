@@ -9,7 +9,7 @@ echoChat.start = function echoChatStart(pubsub, callback) {
   callback();
 };
 
-echoChat.activate = function echoChatActivate(PoP, callback) {
+echoChat.activate = function echoChatActivate(PoP, options, callback) {
   //log.info('in activate');
   echoChat.pubsub.on(PoP, function (message) {
     //log.info('in echochat pubsub with message from: ' + message.from);

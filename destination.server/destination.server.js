@@ -54,7 +54,7 @@ destinationServer.createPoP = function (userID, options, callback) {
     'id': PoPID, 
     'destinationID': options.destinationID,
     'start': function () { 
-        destinationServer.destinations[options.destinationID].startPoP(PoPID, function () {
+        destinationServer.destinations[options.destinationID].startPoP(PoPID, options.options, function () {
           destinationServer.pubsub.emit(PoPID, 
             {from: PoPID, message: options.name + ' is active.'});
         });

@@ -6,12 +6,14 @@ var sinon = require('sinon');
 var events = require('events');
 
 var activateDestStub;
+var activatePoPStub;
 var pubsub;
 
 describe('Destination Server', function () {
   before(function (done) {
 
     activateDestStub = sinon.stub().callsArg(1);
+    activatePoPStub = sinon.stub().callsArg(2);
     pubsub = new events.EventEmitter;
     destServer.start(pubsub, function () {
       done(); 
@@ -53,7 +55,7 @@ describe('Destination Server', function () {
   it('allows a user to inactivate a PoP at a destination');
 
   it('requests activation of a PoP when requested by the user', function(done) {
-    destServer.createDestination({name: 'TestDestination', start: activateDestStub, startPoP: activateDestStub}, function (destID) {
+    destServer.createDestination({name: 'TestDestination', start: activateDestStub, startPoP: activatePoPStub}, function (destID) {
     //  winston.info('DestID: ' + destID);
       pubsub.on(destID, function (message) {
         pubsub.emit(message, message + 'activated');
