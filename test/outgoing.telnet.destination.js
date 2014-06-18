@@ -7,14 +7,29 @@ var pubsub = require('../pubsub/pubsub.js');
 var net = require('net');
 
 var testServer;
+var testConnection;
 
 describe('Outgoing Telnet', function() {
   before(function (done) {
     outgoingTelnet.start(pubsub, function() {
-      testServer = net.createServer(function (connection) { connection.end('Hi, bye!'); });
+      testServer = net.createServer(function (connection) { 
+        testConnection = connection;
+        connection.write('connection established');
+        connection.setTimeout(800, function () { connection.end('Bye!'); }); 
+      });
       testServer.listen(7357);
       done();
     });
+  });
+
+  beforeEach(function (done) {
+    pubsub.removeAllListeners();
+    done();
+  });
+
+  afterEach(function (done) {
+    testConnection.end();
+    done();
   });
 
   after(function (done) {
@@ -30,9 +45,23 @@ describe('Outgoing Telnet', function() {
 
   it('transmits text to a remote telnet server');
 
-  it('transmits text from a remote telnet server');
+  it('transmits text from a remote telnet server', function (done) {
+    pubsub.on('TestTelnet', function (message) {
+      if(message.message.match(/established/)) {
+        done();
+      }
+    });
+    outgoingTelnet.startPoP('TestTelnet', {host: 'localhost', port: 7357}, function () { });
+  });
+  
+  it('notifies on remote server closure of connection', function (done) {
+    pubsub.on('TestTelnet', function (message) {
+      if(message.message.match(/connection closed/)) {
+        done();
+      }
+    });
+    outgoingTelnet.startPoP('TestTelnet', {host: 'localhost', port: 7357}, function () { });
+  });
 
   it('closes a connection to a remote telnet server when requested');
-
-  it('notifies on remote server closure of connection');
 });

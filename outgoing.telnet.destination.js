@@ -26,6 +26,17 @@ outgoingTelnet.startPoP = function outgoingTelnetStartPoP(PoPID, options, callba
 
   var connection = net.connect(port, host, function () { 
     // Insert connection listener here
+    connection.on('data', function (data) {
+      outgoingTelnet.pubsub.emit(PoPID, {from: PoPID, message: data.toString()});
+    });
+    outgoingTelnet.pubsub.on(PoPID, function (message) {
+      if(message.from !== PoPID) {
+        connection.write(message.message);
+      }
+    });
+    connection.on('end', function () {
+      outgoingTelnet.pubsub.emit(PoPID, {from: PoPID, message: 'connection closed'});
+    });
     // And once we've got it set up, that seems like a fabulous time to callback!
     callback();
   });
