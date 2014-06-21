@@ -67,8 +67,9 @@ var getConnectionHandler = function getConnectionHandler(args) {
       }
       // TODO: Check if target is a valid one.
       log.info('Target destination: ' + target);
+      log.info('message is: ' + message);
       if (target) {  
-        args.pubsub.emit('comm.' + target, message);
+        args.pubsub.emit(target, {message: message, from: connection.user});
       } else {
         systemCommands.emit('parseError', message, tex.t("destinations.not connected"));
       }
@@ -92,9 +93,16 @@ var getConnectionHandler = function getConnectionHandler(args) {
       // does this have a callback? Is it a sprode? Does it shprongle?
     });
 
-    systemCommands.on('activateDestination', function (destination) {
-      // This actually wants to establish the connection. We're ignoring that step.
-      connection.activeDestination = destination;
+    systemCommands.on('activateDestination', function (PoPID) {
+      // This actually wants to establish the connection.
+      log.info('trying to activate: ' + PoPID); 
+      args.pubsub.on(PoPID, function (message) {
+        if(message.from == PoPID) {
+          systemCommands.emit('messageForUser', message.message);
+        }
+      });
+      connection.activeDestination = PoPID;
+      args.activatePoP(connection.user, PoPID);
     });
 
     systemCommands.on('parseError', function (line, message) {
@@ -104,7 +112,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
     stream.on('data', function (line) {
       // Our line-based stream has a line for us!  This is a command of some sort from the user.
       // We explicitly make it a string and trim leading and trailing whitespace.
-      log.info('Data Received: ' + line.toString());
+      log.info('(TS): Data Received: ' + line.toString());
       var lineAsString = line.toString().trim();
 
       // This parser could be authed or unauthed.

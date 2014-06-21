@@ -15,6 +15,11 @@ describe('Outgoing Telnet', function() {
       testServer = net.createServer(function (connection) { 
         testConnection = connection;
         connection.write('connection established');
+        connection.on('data', function (data) {
+          if(data == 'ping') {
+            connection.write('pong');
+          }
+        });
         connection.setTimeout(800, function () { connection.end('Bye!'); }); 
       });
       testServer.listen(7357);
@@ -28,7 +33,9 @@ describe('Outgoing Telnet', function() {
   });
 
   afterEach(function (done) {
-    testConnection.end();
+    if(testConnection) {
+      testConnection.end('Test over!');
+    }
     done();
   });
 
@@ -41,9 +48,24 @@ describe('Outgoing Telnet', function() {
     outgoingTelnet.startPoP('TestTelnet', {host: 'localhost', port: 7357}, function () { done (); });
   });
 
-  it('maintains a connection to a remote telnet server');
+  it('maintains a connection to a remote telnet server when the PoP is reactivated');
 
-  it('transmits text to a remote telnet server');
+  it('transmits text to a remote telnet server', function (done) {
+    pubsub.on('TestTelnet', function (message) {
+      if(message.message.match(/pong/)) {
+        done();
+      }
+    });
+    outgoingTelnet.startPoP('TestTelnet', {host: 'localhost', port: 7357}, function () {
+  //    testConnection.on('data', function (data) {
+    //    winston.info('Got data! ' + data);
+  //      if(data.match(/ping/)){
+    //      done();
+  //      }
+    //  });
+      pubsub.emit('TestTelnet', {message: 'ping', from: 'TestUser'});
+    });
+  });
 
   it('transmits text from a remote telnet server', function (done) {
     pubsub.on('TestTelnet', function (message) {
@@ -55,12 +77,13 @@ describe('Outgoing Telnet', function() {
   });
   
   it('notifies on remote server closure of connection', function (done) {
-    pubsub.on('TestTelnet', function (message) {
+    pubsub.on('TestTelnetForTimeouts', function (message) {
       if(message.message.match(/connection closed/)) {
+        testConnection = false;
         done();
       }
     });
-    outgoingTelnet.startPoP('TestTelnet', {host: 'localhost', port: 7357}, function () { });
+    outgoingTelnet.startPoP('TestTelnetForTimeouts', {host: 'localhost', port: 7357}, function () { });
   });
 
   it('closes a connection to a remote telnet server when requested');

@@ -15,16 +15,18 @@ var authStub;
 // var pubStub;
 var invalidAuthStub;
 var sessionStub;
+var activatePoPStub;
 
 describe('Telnet Server', function () {
   before(function (done) {
     // server.start should take an associative array of values (including a port number) and a callback,  and execute the callback once the server is running.
     authStub = sinon.stub().callsArgWith(1, 'testUser');
     invalidAuthStub = sinon.stub().returns('false');
+    activatePoPStub = sinon.stub().returns('true');;
  //   subStub = sinon.stub().callsArgWith(1, 'Subscribed');
  //   pubStub = sinon.stub().returns(1);
     sessionStub = sinon.stub().callsArgWith(1, [{name: 'Remote0'}, {name: 'Remote1'}, {name: 'Remote2'}]);
-    server.start({port: port, authenticate: authStub, pubsub: pubsub, getRemotes: sessionStub}, function () {
+    server.start({port: port, authenticate: authStub, pubsub: pubsub, getRemotes: sessionStub, activatePoP: activatePoPStub}, function () {
       done();
     });
   });
@@ -116,7 +118,7 @@ describe('Telnet Server', function () {
   describe('Remote World Passthrough', function () {
 
     it('publishes messages to a remote PoP', function (done) {
-      pubsub.on('comm.TestWorld', function (message) {
+      pubsub.on('TestWorld', function (message) {
         winston.info('In the listener!');
         client.end();
         done();
