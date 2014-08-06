@@ -1,8 +1,8 @@
 'use strict';
 var log = require('winston');
-var events = require('events');
+var events = require('eventemitter2');
 
-var pubsub = new events.EventEmitter();
+var pubsub = new events.EventEmitter2();
 
 // use module.exports?
 module.exports = pubsub;

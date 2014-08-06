@@ -23,6 +23,9 @@ var getConnectionHandler = function getConnectionHandler(args) {
 
     connection.parser = unauthenticatedParser.getUnauthenticatedParser(systemCommands);
 
+    connection.on('error', function (err) {
+      log.error('Connection error in ' + connection.randomNumber + ' ' + err.toString());
+    });
     // We have a connection object. It is a socket.
     // At some point it will end. All good things must.
     connection.on('end', function () {
@@ -66,10 +69,10 @@ var getConnectionHandler = function getConnectionHandler(args) {
         target = connection.activeDestination;
       }
       // TODO: Check if target is a valid one.
-      log.info('Target destination: ' + target);
-      log.info('message is: ' + message);
+      log.info('(TS): Target destination: ' + target);
+      log.info('(TS): message is: ' + message);
       if (target) {  
-        args.pubsub.emit(target, {message: message, from: connection.user});
+        args.pubsub.emit(target, {to: target, message: message, from: connection.user});
       } else {
         systemCommands.emit('parseError', message, tex.t("destinations.not connected"));
       }
@@ -95,7 +98,7 @@ var getConnectionHandler = function getConnectionHandler(args) {
 
     systemCommands.on('activateDestination', function (PoPID) {
       // This actually wants to establish the connection.
-      log.info('trying to activate: ' + PoPID); 
+      log.info('(TS): trying to activate: ' + PoPID); 
       args.pubsub.on(PoPID, function (message) {
         if(message.from == PoPID) {
           systemCommands.emit('messageForUser', message.message);

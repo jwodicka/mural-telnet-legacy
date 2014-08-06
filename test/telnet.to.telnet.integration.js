@@ -9,6 +9,7 @@ var outgoingTelnet = require('../outgoing.telnet.destination.js');
 
 var pubsub = require('../pubsub/pubsub.js');
 var net = require('net');
+var uuid = require('node-uuid');
 
 var authStub;
 var testServer;
@@ -21,13 +22,22 @@ describe('Outgoing Telnet', function() {
     authStub = sinon.stub().callsArgWith(1, 'testUser');
     destinationServer.start(pubsub, function () {
       testServer = net.createServer(function (connection) { 
+        connection.uuid = uuid.v1();
         connection.write('connection established');
         connection.on('data', function (data) {
+          winston.info('(TT): data received: ' + data.toString());
           if(data == 'ping') {
             connection.write('pong');
           }
+          if(data == 'uuid') {
+            winston.info('Test Server has request for uuid');
+            connection.write(connection.uuid);
+          }
         });
-        connection.setTimeout(2000, function () { connection.end('Bye!'); }); 
+        connection.on('close', function () {
+          winston.info('Test Telnet Connection closed!');
+        });
+        connection.setTimeout(1000, function () { connection.end('Bye!'); }); 
       });
       testServer.listen(7357);
       destinationServer.createDestination({name: 'outgoingTelnet', start: outgoingTelnet.start, startPoP: outgoingTelnet.startPoP}, function (destID) {
@@ -40,11 +50,6 @@ describe('Outgoing Telnet', function() {
         });
       });
     });
-  });
-
-  beforeEach(function (done) {
-    pubsub.removeAllListeners();
-    done();
   });
 
   after(function (done) {
@@ -69,6 +74,39 @@ describe('Outgoing Telnet', function() {
       client.write('connect testUser testPassword\n');
       client.write('%world ' + PoPID + '\n');
      });
+  });
+
+  it('receives the same PoP when requesting again', function (done) {
+    var client1 = net.connect({port: 5321}, function () {
+      client1.write('connect testUser testPassword\n');
+      client1.write('%world ' + PoPID + '\n');
+      var uuid = false;
+      client1.on('data', function (data) {
+        winston.info('client1 recieved data: ' + data.toString());
+        if(data.toString().match(/is active/)) {
+          client1.write('uuid\n');
+        //  client1.write('ping\n');
+        }
+        if(data.toString().match(/-/)) {
+          uuid = data.toString();
+          client1.end();
+          var client2 = net.connect({port: 5321}, function () {
+            client2.write('connect testUser testPassword\n');
+            client2.write('%world ' + PoPID + '\n');
+            client2.on('data', function (data) {
+              winston.info('client2 recieved data: ' + data.toString());
+              if(data.toString()==uuid) {
+                client2.end();
+                done();
+              }
+              if(data.toString().match(/is active/)) {
+                client2.write('uuid\n');
+              }
+            });
+          });
+        }
+      });
+    });
   });
 
 });

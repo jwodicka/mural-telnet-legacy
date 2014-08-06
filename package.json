@@ -27,7 +27,9 @@
     "byline": "*",
     "winston": "*",
     "i18next": "*",
-    "node-uuid": "*"
+    "node-uuid": "*",
+    "eventemitter2": "*",
+    "sqlite3": "*"
   },
   "devDependencies": {
     "istanbul": "*",
